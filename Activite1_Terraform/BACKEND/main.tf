@@ -24,8 +24,9 @@ resource "aws_s3_bucket" "ecf-2025" {
 }
 
 resource "aws_s3_bucket_ownership_controls" "ownership" {
-  bucket = aws_s3_bucket.ecf-2025.bucket  # Référence correcte ici
+  bucket = aws_s3_bucket.ecf-2025.bucket  
   rule {
     object_ownership = "BucketOwnerEnforced"
   }
+
 }
