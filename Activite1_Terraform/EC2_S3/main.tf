@@ -35,12 +35,12 @@ provider "aws" {
 resource "aws_security_group" "ec2_sg" {
   name_prefix = "ec2-sg-"
 
-  # Autoriser SSH depuis n'importe quelle IP (⚠️ Sécurise avec ton IP si possible)
+  # Autoriser SSH depuis n'importe quelle IP 
   ingress {
     from_port   = 22
     to_port     = 22
     protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]  # Remplace par ton IP pour plus de sécurité
+    cidr_blocks = ["0.0.0.0/0"]  
   }
 
   egress {
@@ -56,8 +56,8 @@ resource "aws_instance" "ec2ecf" {
   ami                    = "ami-06e02ae7bdac6b938"
   instance_type          = "t2.micro"
   security_groups        = [aws_security_group.ec2_sg.name]
-  associate_public_ip_address = true  # ⚠️ Ajout pour obtenir une IP publique
-  key_name               = var.KEY_NAME  # ⚠️ Ajout pour l'authentification SSH
+  associate_public_ip_address = true  
+  key_name               = var.KEY_NAME  
 
   tags = {
     Name          = "EC2ECF"
@@ -109,3 +109,4 @@ output "ec2_public_ip" {
 output "ec2_private_ip" {
   value = aws_instance.ec2ecf.private_ip
 }
+
