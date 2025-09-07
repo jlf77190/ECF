@@ -27,7 +27,7 @@ provider "aws" {
   secret_key = data.vault_kv_secret_v2.aws.data["secret_key"]
 }
 
-# 🔹 Récupération de l'IP privée de l'EC2 via Terraform Remote State
+# Récupération de l'IP privée de l'EC2 via Terraform Remote State
 data "terraform_remote_state" "ec2" {
   backend = "s3"
 
@@ -88,3 +88,4 @@ resource "aws_db_instance" "mysql_rds" {
 output "rds_endpoint" {
   value = aws_db_instance.mysql_rds.endpoint
 }
+
