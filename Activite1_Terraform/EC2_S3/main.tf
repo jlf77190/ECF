@@ -18,20 +18,20 @@ data "vault_kv_secret_v2" "aws" {
   name  = "aws"
 }
 
-# Récupérer les informations du mot de passe ubuntu depuis Vault
+# Récupéreration des informations du mot de passe ubuntu depuis Vault
 data "vault_kv_secret_v2" "user" {
   mount = "user-creds"
   name  = "user"
 }
 
-# Fournisseur AWS avec les secrets Vault pour l'accès
+# Gestion des accès au Fournisseur AWS avec les secrets Vault pour l'accès
 provider "aws" {
   region     = "eu-west-3"
   access_key = data.vault_kv_secret_v2.aws.data["access_key"]
   secret_key = data.vault_kv_secret_v2.aws.data["secret_key"]
 }
 
-# 🔹 Security Group pour l'EC2 avec accès SSH
+# Security Group pour l'EC2 avec accès SSH
 resource "aws_security_group" "ec2_sg" {
   name_prefix = "ec2-sg-"
 
@@ -51,7 +51,7 @@ resource "aws_security_group" "ec2_sg" {
   }
 }
 
-# 🔹 Création de l'EC2 avec IP publique et clé SSH
+# Création de l'EC2 avec une IP publique et clé SSH via le KEY_NAME créé au préalable dans la console aws
 resource "aws_instance" "ec2ecf" {
   ami                    = "ami-06e02ae7bdac6b938"
   instance_type          = "t2.micro"
@@ -70,22 +70,22 @@ resource "aws_instance" "ec2ecf" {
 
      echo "ubuntu:${data.vault_kv_secret_v2.user.data["password"]}" | chpasswd || { echo "Failed to set ubuntu password"; exit 1; }
 
-     # Mise à jour et installation des paquets nécessaires
+     # Mise à jour et installation des paquets sur notre socle système
      sudo apt update
      sleep 30  # Attendre un peu pour éviter les conflits de lock
      sudo apt install -y default-jdk mysql-client tomcat10 || { echo "Package installation failed"; exit 1; }
 
-     # Vérifier que Tomcat est bien installé
+     # Vérification de l'installation du paquet Tomcat
      sudo systemctl enable tomcat10
      sudo systemctl start tomcat10 || { echo "Tomcat failed to start"; exit 1; }
 
-     echo "Installation terminée avec succès"
+     echo "Installation terminée"
   EOF
 
 
 }
 
-# 🔹 Bucket S3
+# Bucket S3
 resource "aws_s3_bucket" "ecf-2025" {
   bucket = "ecf-2025"
   tags = {
@@ -101,7 +101,7 @@ resource "aws_s3_bucket_ownership_controls" "ownership" {
   }
 }
 
-# 🔹 Outputs pour voir l'IP publique et privée après Terraform Apply
+# Outputs pour voir l'IP publique et privée après Terraform Apply (cette information sera utilisé ulérieurement par un autre module terraform)
 output "ec2_public_ip" {
   value = aws_instance.ec2ecf.public_ip
 }
@@ -109,4 +109,5 @@ output "ec2_public_ip" {
 output "ec2_private_ip" {
   value = aws_instance.ec2ecf.private_ip
 }
+
 
